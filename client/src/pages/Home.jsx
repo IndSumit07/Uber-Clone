@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <div>
       <button onClick={handleLogout}>Logout</button>
-      <div>{user ? user : "Not Found"}</div>
+      <div>{JSON.stringify(user)}</div>
     </div>
   );
 };
