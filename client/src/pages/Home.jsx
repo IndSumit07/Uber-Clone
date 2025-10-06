@@ -3,7 +3,7 @@ import { UserDataContext } from "../context/UserContext";
 import { CaptainDataContext } from "../context/CaptainContext";
 const Home = () => {
   const { userLogout, user } = useContext(UserDataContext);
-  const { captainLogout, captain } = useContext(CaptainDataContext);
+  const { captainLogout } = useContext(CaptainDataContext);
 
   const handleLogout1 = async () => {
     userLogout();
@@ -15,7 +15,7 @@ const Home = () => {
     <div className="p-10 text-xl flex flex-col justify-center items-center gap-5">
       <button onClick={handleLogout1}>User Logout</button>
       <button onClick={handleLogout2}>Captain Logout</button>
-      <div>{JSON.stringify(user)}</div>
+      <div>{user && JSON.stringify(user)}</div>
     </div>
   );
 };

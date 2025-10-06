@@ -184,7 +184,7 @@ const CaptainSignup = () => {
             />
           </div>
           <button className="mt-5 flex bg-green-500 w-full justify-center items-center py-3 rounded-xl text-xl font-semibold text-white hover:opacity-75 transition-all duration-150">
-            Sign Up
+            SignUp
           </button>
           <p className="mt-2 ml-1 font-semibold">
             Already have an account ?{" "}

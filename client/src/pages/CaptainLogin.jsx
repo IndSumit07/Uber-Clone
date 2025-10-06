@@ -80,7 +80,9 @@ const CaptainLogin = () => {
             value={form.email}
             className="bg-[#F3F3F3] w-full px-5 py-3 rounded-lg"
           />
-          <p className="mb-3 ml-1 font-semibold text-xl">Enter your password</p>
+          <p className="mb-3 ml-1 mt-8 font-semibold text-xl">
+            Enter your password
+          </p>
 
           <input
             onChange={handleChange}
@@ -91,7 +93,7 @@ const CaptainLogin = () => {
             className="bg-[#F3F3F3] w-full px-5 py-3 rounded-lg"
           />
           <button className="mt-5 flex bg-green-500 w-full justify-center items-center py-3 rounded-xl text-xl font-semibold text-white hover:opacity-75 transition-all duration-150">
-            Sign Up
+            Login
           </button>
           <p className="mt-2 ml-1 font-semibold">
             Already have an account ?{" "}

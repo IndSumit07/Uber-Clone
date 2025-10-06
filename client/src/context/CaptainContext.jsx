@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { createContext, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 export const CaptainDataContext = createContext();
 
 const CaptainContext = ({ children }) => {
+  const navigate = useNavigate();
   const [captain, setCaptain] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -18,11 +20,12 @@ const CaptainContext = ({ children }) => {
       });
       if (response.status === 200) {
         localStorage.removeItem("token");
-        Navigate("/user-login");
-        toast.success(response.data.message);
+        navigate("/user-login");
+
+        toast.success(response.data?.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.message);
     }
   };
   return (
