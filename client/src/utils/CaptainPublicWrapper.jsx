@@ -6,6 +6,7 @@ const CaptainPublicWrapper = ({ children }) => {
   if (token) {
     return <Navigate to="/home" replace />;
   }
+
   return <>{children}</>;
 };
 

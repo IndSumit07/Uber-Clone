@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import UserProtectedWrapper from "./utils/UserProtectedWrapper";
 import UserPublicWrapper from "./utils/UserPublicWrapper";
 import CaptainPublicWrapper from "./utils/CaptainPublicWrapper";
+import CaptainProtectedWrapper from "./utils/CaptainProtectedWrapper";
 const App = () => {
   return (
     <>
@@ -20,7 +21,7 @@ const App = () => {
           path="/user-login"
           element={
             <UserPublicWrapper>
-              <UserLogin />
+              <Home />
             </UserPublicWrapper>
           }
         />
@@ -54,6 +55,14 @@ const App = () => {
             <UserProtectedWrapper>
               <Home />
             </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/captain-home"
+          element={
+            <CaptainProtectedWrapper>
+              <Home />
+            </CaptainProtectedWrapper>
           }
         />
       </Routes>
