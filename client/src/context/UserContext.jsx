@@ -10,7 +10,7 @@ const UserContext = ({ children }) => {
   const [user, setUser] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const logout = async () => {
+  const userLogout = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(backendUrl + "/api/user/logout", {
@@ -29,7 +29,9 @@ const UserContext = ({ children }) => {
   };
   return (
     <div>
-      <UserDataContext.Provider value={{ user, setUser, backendUrl, logout }}>
+      <UserDataContext.Provider
+        value={{ user, setUser, backendUrl, userLogout }}
+      >
         {children}
       </UserDataContext.Provider>
     </div>

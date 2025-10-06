@@ -8,7 +8,7 @@ const CaptainContext = ({ children }) => {
   const [captain, setCaptain] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const logout = async () => {
+  const captainLogout = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(backendUrl + "/api/captain/logout", {
@@ -32,7 +32,7 @@ const CaptainContext = ({ children }) => {
           captain,
           setCaptain,
           backendUrl,
-          logout,
+          captainLogout,
         }}
       >
         {children}
