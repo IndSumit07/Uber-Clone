@@ -11,6 +11,7 @@ import UserProtectedWrapper from "./utils/UserProtectedWrapper";
 import UserPublicWrapper from "./utils/UserPublicWrapper";
 import CaptainPublicWrapper from "./utils/CaptainPublicWrapper";
 import CaptainProtectedWrapper from "./utils/CaptainProtectedWrapper";
+import ChooseRide from "./components/ChooseRide";
 const App = () => {
   return (
     <>
@@ -54,6 +55,14 @@ const App = () => {
           element={
             <UserProtectedWrapper>
               <Home />
+            </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/choose-ride"
+          element={
+            <UserProtectedWrapper>
+              <ChooseRide />
             </UserProtectedWrapper>
           }
         />

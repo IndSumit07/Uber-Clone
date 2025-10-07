@@ -44,7 +44,7 @@ const UserContext = ({ children }) => {
         console.log(response.data);
       }
     } catch (error) {
-      console.log(error.response.data.message);
+      toast.error("Session Expired! Login Again");
     } finally {
       setIsLoading(false);
     }

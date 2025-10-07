@@ -12,13 +12,13 @@ const Start = () => {
         style={{ backgroundImage: `url(${HomePageBg})` }}
         className="flex w-full h-[75%] justify-center items-center bg-cover bg-center"
       ></div>
-      <div className="w-full h-[25%] flex flex-col gap-5 justify-center items-center bg-[black] text-white px-10">
+      <div className="w-full h-[25%] z-50 flex flex-col gap-5 justify-center items-center bg-[black] text-white px-10">
         <h3 className="text-start text-xl font-semibold">
           Get Started With Uber
         </h3>
         <Link
           to="/user-login"
-          className="w-full flex justify-center items-center text-black gap-1 text-center  py-3 bg-[#E0E0E0] rounded-xl text-xl font-bold"
+          className="w-full flex justify-center items-center text-black gap-1 text-center py-3 bg-[#E0E0E0] rounded-xl text-xl font-bold"
         >
           <p>Continue</p> <ArrowRight strokeWidth={3} />
         </Link>

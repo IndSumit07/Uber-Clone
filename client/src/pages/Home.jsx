@@ -2,15 +2,19 @@ import {
   ChevronDown,
   Clock,
   MapPin,
+  Paperclip,
+  Search,
+  Send,
   ShoppingCart,
   Utensils,
   X,
 } from "lucide-react";
-import React, { useContext, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { UserDataContext } from "../context/UserContext";
+import ChooseRide from "../components/ChooseRide";
 
 const Home = () => {
   const { user, isLoading } = useContext(UserDataContext);
@@ -18,6 +22,7 @@ const Home = () => {
   const panelRef = useRef(null);
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
+  const location = useLocation();
 
   useGSAP(() => {
     if (isActive) {
@@ -26,7 +31,7 @@ const Home = () => {
         { height: "40vh" },
         {
           height: "100dvh",
-          duration: 0.5,
+          duration: 1,
           ease: "power3.out",
         }
       );
@@ -52,6 +57,10 @@ const Home = () => {
       return <ShoppingCart strokeWidth={2.5} />;
     }
   };
+
+  useEffect(() => {
+    setIsActive(location.state?.panelClosed);
+  }, []);
 
   const dummyData = [
     {
@@ -117,7 +126,7 @@ const Home = () => {
       {!isLoading && (
         <div className="w-full h-[100dvh] relative">
           {/* Logo */}
-          <div className="absolute top-5 left-5 z-20">
+          <div className="absolute top-5 left-5 z-0">
             <Link to="/" className="text-black text-4xl font-orbitron">
               Uber
             </Link>
@@ -132,16 +141,16 @@ const Home = () => {
             }}
           ></div>
 
-          {/* Panel */}
+          {/* Find a Panel */}
           <div
             ref={panelRef}
-            className="absolute bottom-0 left-0 w-full bg-white overflow-hidden px-5 py-5 rounded-t-2xl shadow-lg z-50 flex flex-col "
+            className="absolute bottom-0 left-0 w-full bg-white overflow-hidden px-5 py-5 rounded-t-2xl shadow-lg z-10 flex flex-col "
             style={{ height: "40vh" }}
           >
             {/* Close Button */}
             <div
               onClick={() => setIsActive(false)}
-              className="absolute top-5 right-5 cursor-pointer z-10"
+              className="absolute top-5 right-5 cursor-pointer"
             >
               <X strokeWidth={3} />
             </div>
@@ -152,6 +161,7 @@ const Home = () => {
             {/* Form */}
             <form className="w-full mt-5 flex flex-col gap-5 relative">
               <input
+                onChange={(e) => setPickup(e.target.value)}
                 value={pickup}
                 onClick={() => setIsActive(true)}
                 type="text"
@@ -165,17 +175,20 @@ const Home = () => {
               </div>
               <input
                 value={destination}
+                onChange={(e) => setDestination(e.target.value)}
                 onClick={() => setIsActive(true)}
                 type="text"
                 className="bg-[#F3F3F3] w-full px-5 pl-12 py-4 rounded-xl"
                 placeholder="Enter your destination"
               />
               <div>
-                <button className="flex justify-start bg-[#f3f3f3] items-center px-5 py-3 rounded-full gap-2">
-                  <Clock strokeWidth={3} />
+                <Link
+                  to="/choose-ride"
+                  className="inline-flex justify-start bg-black text-white active:bg-black/75 items-center px-5 py-3 rounded-full gap-2"
+                >
+                  <Send strokeWidth={3} size={20} />
                   <span className="font-bold text-base">Leave Now</span>
-                  <ChevronDown />
-                </button>
+                </Link>
               </div>
             </form>
 
