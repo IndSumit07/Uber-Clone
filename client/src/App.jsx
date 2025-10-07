@@ -21,7 +21,7 @@ const App = () => {
           path="/user-login"
           element={
             <UserPublicWrapper>
-              <Home />
+              <UserLogin />
             </UserPublicWrapper>
           }
         />

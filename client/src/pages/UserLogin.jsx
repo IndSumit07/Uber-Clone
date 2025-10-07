@@ -25,14 +25,12 @@ const UserLogin = () => {
       if (response.status === 200) {
         const data = response.data;
         toast.success(data.message);
-        setUser(data.user);
         localStorage.setItem("token", data.token);
         clearForm();
         navigate("/home");
       }
     } catch (error) {
       console.log(error);
-
       toast.error(error.response.data.message);
     }
   };
