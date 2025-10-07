@@ -22,7 +22,7 @@ const App = () => {
           path="/user-login"
           element={
             <UserPublicWrapper>
-              <ChooseRide />
+              <Home />
             </UserPublicWrapper>
           }
         />
