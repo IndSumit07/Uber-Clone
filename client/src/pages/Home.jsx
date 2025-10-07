@@ -116,7 +116,6 @@ const Home = () => {
       type: "restaurant",
     },
   ];
-  console.log(user);
 
   return (
     <div className="">
@@ -193,11 +192,11 @@ const Home = () => {
             </form>
 
             {isActive && (
-              <div className="mt-8 grid grid-cols-1 gap-5 overflow-y-auto flex-1">
+              <div className="mt-8 grid grid-cols-1 gap-5 overflow-y-auto flex-1  ">
                 {dummyData.map((data, index) => (
                   <div
                     key={index}
-                    className="flex justify-start items-center gap-3 "
+                    className="flex justify-start items-center gap-3 hover:border-black border-2 rounded-xl h-[90px] px-3"
                     onClick={() => {
                       setDestination(data.address);
                       setPickup("Your Location");

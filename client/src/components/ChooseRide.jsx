@@ -67,7 +67,7 @@ const ChooseRide = () => {
             <h3 className="text-xl font-bold">Choose a ride</h3>
 
             {/* Ride Options */}
-            <div className="mt-4 space-y-3 overflow-y-auto h-full ">
+            <div className="mt-5 space-y-3 py-3 overflow-y-auto h-full ">
               {/* Ride Card */}
               {[
                 {
@@ -88,7 +88,7 @@ const ChooseRide = () => {
               ].map((ride, i) => (
                 <div
                   key={i}
-                  className="w-full h-[85px] flex gap-5 px-5 py-2 rounded-xl items-center border border-transparent hover:border-black transition-all cursor-pointer"
+                  className="w-full h-[85px] flex gap-5 px-5 py-2 rounded-xl items-center border-2 hover:border-black transition-all cursor-pointer"
                 >
                   {/* Image */}
                   <div className="w-[20%] flex justify-center items-center">
