@@ -14,7 +14,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { UserDataContext } from "../context/UserContext";
-import ChooseRide from "../components/ChooseRide";
+import ChooseRide from "./ChooseRide";
 
 const Home = () => {
   const { user, isLoading } = useContext(UserDataContext);
