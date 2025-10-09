@@ -10,19 +10,22 @@ import {
   X,
 } from "lucide-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { UserDataContext } from "../context/UserContext";
 import ChooseRide from "./ChooseRide";
+import UberMap from "../components/UberMap";
+import { toast } from "react-toastify";
 
 const Home = () => {
-  const { user, isLoading } = useContext(UserDataContext);
+  const { user, isLoading, calculateFares } = useContext(UserDataContext);
   const [isActive, setIsActive] = useState(false);
   const panelRef = useRef(null);
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   useGSAP(() => {
     if (isActive) {
@@ -55,6 +58,22 @@ const Home = () => {
       return <Utensils strokeWidth={2.5} />;
     } else if (type === "shopping") {
       return <ShoppingCart strokeWidth={2.5} />;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!pickup || !destination) {
+      alert("Please enter both pickup and destination locations");
+      return;
+    }
+    try {
+      setIsActive(false);
+      await calculateFares(pickup, destination);
+      navigate("/choose-ride", { state: { panelClosed: true } });
+    } catch (error) {
+      toast.error("Error calculating fares:", error);
+      alert("Failed to calculate fares. Please try again.");
     }
   };
 
@@ -132,18 +151,14 @@ const Home = () => {
           </div>
 
           {/* Background */}
-          <div
-            className="w-full h-[100dvh] bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage:
-                "url('https://i.pinimg.com/736x/15/26/e1/1526e1add1ecb1dfc6186efd1dc47f5d.jpg')",
-            }}
-          ></div>
+          <div className="absolute top-0 left-0 w-full h-[100dvh] bg-cover bg-center bg-no-repeat z-10">
+            <UberMap />
+          </div>
 
           {/* Find a Panel */}
           <div
             ref={panelRef}
-            className="absolute bottom-0 left-0 w-full bg-white overflow-hidden px-5 py-5 rounded-t-2xl shadow-lg z-10 flex flex-col "
+            className="absolute bottom-0 left-0 w-full bg-white overflow-hidden px-5 py-5 rounded-t-2xl shadow-lg z-50 flex flex-col "
             style={{ height: "40vh" }}
           >
             {/* Close Button */}
@@ -158,7 +173,10 @@ const Home = () => {
             <h3 className="text-xl font-bold">Find a trip</h3>
 
             {/* Form */}
-            <form className="w-full mt-5 flex flex-col gap-5 relative">
+            <form
+              onSubmit={handleSubmit}
+              className="w-full mt-5 flex flex-col gap-5 relative"
+            >
               <input
                 onChange={(e) => setPickup(e.target.value)}
                 value={pickup}
@@ -180,15 +198,12 @@ const Home = () => {
                 className="bg-[#F3F3F3] w-full px-5 pl-12 py-4 rounded-xl"
                 placeholder="Enter your destination"
               />
-              <div>
-                <Link
-                  to="/choose-ride"
-                  className="inline-flex justify-start bg-black text-white active:bg-black/75 items-center px-5 py-3 rounded-full gap-2"
-                >
+              <button type="submit" onClick={handleSubmit}>
+                <Link className="inline-flex justify-start bg-black text-white active:bg-black/75 items-center px-5 py-3 rounded-full gap-2">
                   <Send strokeWidth={3} size={20} />
                   <span className="font-bold text-base">Leave Now</span>
                 </Link>
-              </div>
+              </button>
             </form>
 
             {isActive && (

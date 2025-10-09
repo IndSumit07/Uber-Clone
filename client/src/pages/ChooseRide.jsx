@@ -1,12 +1,13 @@
-import React, { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { UserDataContext } from "../context/UserContext";
 import { Link } from "react-router-dom";
 import { Wallet, X } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { toast } from "react-toastify";
 
 const ChooseRide = () => {
-  const { user, isLoading } = useContext(UserDataContext);
+  const { isLoading, fares, createTrip } = useContext(UserDataContext);
 
   const panelRef1 = useRef();
   const panelRef2 = useRef();
@@ -15,6 +16,7 @@ const ChooseRide = () => {
   const [ride, setRide] = useState(null);
   const [chooseRide, setChooseRide] = useState(false);
   const [lookingForDriver, setLookingForDriver] = useState(false);
+  const [vehicleType, setVehicleType] = useState("");
 
   // Animate Main Ride Panel
   useGSAP(() => {
@@ -58,20 +60,25 @@ const ChooseRide = () => {
     );
   }, []);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await createTrip(fares?.pickup, fares?.destination, vehicleType);
+  };
+
   const rides = [
     {
       name: "Uber Premier",
-      price: "198.86",
+      price: fares?.fares?.car.totalFare || "0",
       img: "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/ukcomfort.png",
     },
     {
       name: "Uber Auto",
-      price: "98.50",
+      price: fares?.fares?.auto.totalFare || "0",
       img: "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/TukTuk_Green_v1.png",
     },
     {
       name: "Uber Bike",
-      price: "50.24",
+      price: fares?.fares?.motorcycle.totalFare || "0",
       img: "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Uber_Moto_India1.png",
     },
   ];
@@ -94,14 +101,12 @@ const ChooseRide = () => {
                 "url('https://i.pinimg.com/736x/15/26/e1/1526e1add1ecb1dfc6186efd1dc47f5d.jpg')",
             }}
           ></div>
-
           {/* Logo */}
           <div className="absolute top-5 left-5 z-10">
             <Link to="/" className="text-black text-4xl font-orbitron">
               Uber
             </Link>
           </div>
-
           {/* Main Ride Selection Panel */}
           <div
             ref={panelRef1}
@@ -125,6 +130,14 @@ const ChooseRide = () => {
                   onClick={() => {
                     setRide(i);
                     setChooseRide(true);
+
+                    setVehicleType(
+                      rideOption.name.toLowerCase().includes("Uber Bike")
+                        ? "motorcycle"
+                        : rideOption.name.toLowerCase().includes("Uber Auto")
+                        ? "auto"
+                        : "car"
+                    );
                   }}
                   className="w-full h-[85px] flex gap-5 px-5 py-2 rounded-xl items-center border-2 hover:border-black transition-all cursor-pointer"
                 >
@@ -132,6 +145,9 @@ const ChooseRide = () => {
                     className="w-20 object-contain"
                     src={rideOption.img}
                     alt={rideOption.name}
+                    onError={(e) => {
+                      e.target.src = "fallback-image-url";
+                    }}
                   />
 
                   <div className="flex flex-col justify-center flex-1">
@@ -146,7 +162,6 @@ const ChooseRide = () => {
               ))}
             </div>
           </div>
-
           {/* Confirm Ride Panel */}
           {ride !== null && (
             <div
@@ -179,8 +194,8 @@ const ChooseRide = () => {
                 <div className="flex items-center gap-3 w-full">
                   <div className="p-2 w-1 h-1 rounded-full border-4 border-black"></div>
                   <div className="w-full">
-                    <h3 className="font-bold text-lg">562/11-A</h3>
-                    <p className="text-black/75">Basti, Uttar Pradesh</p>
+                    <h3 className="font-bold text-lg">{fares?.pickup}</h3>
+                    <p className="text-black/75">{fares?.pickup}</p>
                   </div>
                 </div>
               </div>
@@ -189,10 +204,8 @@ const ChooseRide = () => {
                 <div className="flex items-center gap-3 w-full">
                   <div className="w-4 h-4 p-2 border-[3.5px] border-black"></div>
                   <div className="w-full">
-                    <h3 className="font-bold text-lg">Third Wave Coffee</h3>
-                    <p className="text-black/75 pr-5">
-                      17th Cross Rd, PWS Quarters, 1st Sector, HSR Layout
-                    </p>
+                    <h3 className="font-bold text-lg">{fares?.destination}</h3>
+                    <p className="text-black/75 pr-5">{fares?.destination}</p>
                   </div>
                 </div>
               </div>
@@ -202,7 +215,9 @@ const ChooseRide = () => {
                 <div className="flex items-center gap-3 w-full">
                   <Wallet strokeWidth={3} size={28} />
                   <div className="w-full">
-                    <h3 className="font-bold text-lg">&#8377; 199.30</h3>
+                    <h3 className="font-bold text-lg">
+                      &#8377; {rides[ride].price}
+                    </h3>
                     <p className="text-black/75">Cash</p>
                   </div>
                 </div>
@@ -210,9 +225,10 @@ const ChooseRide = () => {
 
               <div className="flex justify-center items-center mt-5">
                 <button
-                  onClick={() => {
-                    setLookingForDriver(true);
+                  onClick={(e) => {
                     setChooseRide(false);
+                    handleSubmit(e);
+                    setLookingForDriver(true);
                   }}
                   className="bg-black px-6 py-3 rounded-full text-white hover:bg-gray-800 transition-all"
                 >
@@ -221,7 +237,6 @@ const ChooseRide = () => {
               </div>
             </div>
           )}
-
           {/* Looking For Driver Panel */}
           {lookingForDriver && (
             <div
