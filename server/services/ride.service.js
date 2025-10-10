@@ -128,6 +128,7 @@ export const calculateAllFares = async (pickup, destination) => {
     destination
   );
 
+
   return {
     pickup,
     destination,
