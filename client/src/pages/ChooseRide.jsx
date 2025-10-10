@@ -18,6 +18,11 @@ const ChooseRide = () => {
   const [lookingForDriver, setLookingForDriver] = useState(false);
   const [vehicleType, setVehicleType] = useState("");
 
+  // Debug states
+  console.log("chooseRide:", chooseRide);
+  console.log("lookingForDriver:", lookingForDriver);
+  console.log("ride:", ride);
+
   // Animate Main Ride Panel
   useGSAP(() => {
     if (panelRef1.current) {
@@ -33,12 +38,12 @@ const ChooseRide = () => {
   useGSAP(() => {
     if (panelRef2.current) {
       gsap.to(panelRef2.current, {
-        y: chooseRide ? "0%" : "100%",
+        y: chooseRide && !lookingForDriver ? "0%" : "100%",
         duration: 0.8,
         ease: "power3.out",
       });
     }
-  }, [chooseRide]);
+  }, [chooseRide, lookingForDriver]);
 
   // Animate Looking For Driver Panel
   useGSAP(() => {
@@ -53,16 +58,48 @@ const ChooseRide = () => {
 
   // Animate Main Panel Entry Once
   useGSAP(() => {
-    gsap.fromTo(
-      panelRef1.current,
-      { y: "100%" },
-      { y: "0%", duration: 1, ease: "power3.out" }
-    );
+    if (panelRef1.current) {
+      gsap.fromTo(
+        panelRef1.current,
+        { y: "100%" },
+        { y: "0%", duration: 1, ease: "power3.out" }
+      );
+    }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await createTrip(fares?.pickup, fares?.destination, vehicleType);
+    console.log("handleSubmit called");
+
+    try {
+      // Set states immediately before API call
+      setChooseRide(false);
+      setLookingForDriver(true);
+
+      console.log("States set - chooseRide: false, lookingForDriver: true");
+
+      const response = await createTrip(
+        fares?.pickup,
+        fares?.destination,
+        vehicleType
+      );
+
+      console.log("createTrip response:", response);
+
+      if (response) {
+        console.log("Trip created successfully");
+        // The lookingForDriver panel should already be visible
+      } else {
+        toast.error("Failed to create ride. Please try again.");
+        setLookingForDriver(false);
+        setChooseRide(true);
+      }
+    } catch (error) {
+      console.error("Error creating trip:", error);
+      toast.error("Something went wrong. Please try again.");
+      setLookingForDriver(false);
+      setChooseRide(true);
+    }
   };
 
   const rides = [
@@ -70,23 +107,26 @@ const ChooseRide = () => {
       name: "Uber Premier",
       price: fares?.fares?.car.totalFare || "0",
       img: "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/ukcomfort.png",
+      type: "car",
     },
     {
       name: "Uber Auto",
       price: fares?.fares?.auto.totalFare || "0",
       img: "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/TukTuk_Green_v1.png",
+      type: "auto",
     },
     {
       name: "Uber Bike",
       price: fares?.fares?.motorcycle.totalFare || "0",
       img: "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Uber_Moto_India1.png",
+      type: "motorcycle",
     },
   ];
 
   return (
     <div className="font-grot w-full h-[100dvh] overflow-hidden relative">
       {isLoading && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
           Loading...
         </div>
       )}
@@ -101,12 +141,14 @@ const ChooseRide = () => {
                 "url('https://i.pinimg.com/736x/15/26/e1/1526e1add1ecb1dfc6186efd1dc47f5d.jpg')",
             }}
           ></div>
+
           {/* Logo */}
           <div className="absolute top-5 left-5 z-10">
             <Link to="/" className="text-black text-4xl font-orbitron">
               Uber
             </Link>
           </div>
+
           {/* Main Ride Selection Panel */}
           <div
             ref={panelRef1}
@@ -130,14 +172,8 @@ const ChooseRide = () => {
                   onClick={() => {
                     setRide(i);
                     setChooseRide(true);
-
-                    setVehicleType(
-                      rideOption.name.toLowerCase().includes("Uber Bike")
-                        ? "motorcycle"
-                        : rideOption.name.toLowerCase().includes("Uber Auto")
-                        ? "auto"
-                        : "car"
-                    );
+                    setVehicleType(rideOption.type);
+                    console.log("Selected ride:", i, "type:", rideOption.type);
                   }}
                   className="w-full h-[85px] flex gap-5 px-5 py-2 rounded-xl items-center border-2 hover:border-black transition-all cursor-pointer"
                 >
@@ -162,114 +198,124 @@ const ChooseRide = () => {
               ))}
             </div>
           </div>
-          {/* Confirm Ride Panel */}
-          {ride !== null && (
+
+          {/* Confirm Ride Panel - Always in DOM */}
+          <div
+            ref={panelRef2}
+            className="absolute bottom-0 left-0 w-full bg-white pt-3 overflow-y-auto rounded-t-2xl shadow-lg z-30 flex flex-col pb-5"
+            style={{ height: "50vh", transform: "translateY(100%)" }}
+          >
             <div
-              ref={panelRef2}
-              className="absolute bottom-0 left-0 w-full bg-white pt-3 overflow-y-auto rounded-t-2xl shadow-lg z-30 flex flex-col pb-5"
-              style={{ height: "50vh", transform: "translateY(100%)" }}
+              onClick={() => {
+                setChooseRide(false);
+                setLookingForDriver(false);
+              }}
+              className="absolute top-5 right-5 cursor-pointer"
             >
-              <div
-                onClick={() => {
-                  setChooseRide(false);
-                }}
-                className="absolute top-5 right-5 cursor-pointer"
-              >
-                <X strokeWidth={3} />
-              </div>
-
-              <h3 className="px-5 py-5 text-xl font-bold">Confirm your ride</h3>
-
-              <div className="flex flex-col items-center justify-center gap-3 h-full">
-                <img
-                  src={rides[ride].img}
-                  alt={rides[ride].name}
-                  className="w-28 scale-150 object-contain"
-                />
-              </div>
-
-              <div className="w-full h-[0.5px] bg-black/50"></div>
-
-              <div className="mt-5 pl-5 w-full">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="p-2 w-1 h-1 rounded-full border-4 border-black"></div>
-                  <div className="w-full">
-                    <h3 className="font-bold text-lg">{fares?.pickup}</h3>
-                    <p className="text-black/75">{fares?.pickup}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-5 pl-5 w-full">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-4 h-4 p-2 border-[3.5px] border-black"></div>
-                  <div className="w-full">
-                    <h3 className="font-bold text-lg">{fares?.destination}</h3>
-                    <p className="text-black/75 pr-5">{fares?.destination}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment */}
-              <div className="mt-5 pl-5 w-full">
-                <div className="flex items-center gap-3 w-full">
-                  <Wallet strokeWidth={3} size={28} />
-                  <div className="w-full">
-                    <h3 className="font-bold text-lg">
-                      &#8377; {rides[ride].price}
-                    </h3>
-                    <p className="text-black/75">Cash</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-center items-center mt-5">
-                <button
-                  onClick={(e) => {
-                    setChooseRide(false);
-                    handleSubmit(e);
-                    setLookingForDriver(true);
-                  }}
-                  className="bg-black px-6 py-3 rounded-full text-white hover:bg-gray-800 transition-all"
-                >
-                  Confirm Ride
-                </button>
-              </div>
+              <X strokeWidth={3} />
             </div>
-          )}
-          {/* Looking For Driver Panel */}
-          {lookingForDriver && (
+
+            <h3 className="px-5 py-5 text-xl font-bold">Confirm your ride</h3>
+
+            {ride !== null && (
+              <>
+                <div className="flex flex-col items-center justify-center gap-3 h-full">
+                  <img
+                    src={rides[ride]?.img}
+                    alt={rides[ride]?.name}
+                    className="w-28 scale-150 object-contain"
+                  />
+                </div>
+
+                <div className="w-full h-[0.5px] bg-black/50"></div>
+
+                <div className="mt-5 pl-5 w-full">
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="p-2 w-1 h-1 rounded-full border-4 border-black"></div>
+                    <div className="w-full">
+                      <h3 className="font-bold text-lg">{fares?.pickup}</h3>
+                      <p className="text-black/75">{fares?.pickup}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-5 pl-5 w-full">
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="w-4 h-4 p-2 border-[3.5px] border-black"></div>
+                    <div className="w-full">
+                      <h3 className="font-bold text-lg">
+                        {fares?.destination}
+                      </h3>
+                      <p className="text-black/75 pr-5">{fares?.destination}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment */}
+                <div className="mt-5 pl-5 w-full">
+                  <div className="flex items-center gap-3 w-full">
+                    <Wallet strokeWidth={3} size={28} />
+                    <div className="w-full">
+                      <h3 className="font-bold text-lg">
+                        &#8377; {rides[ride]?.price}
+                      </h3>
+                      <p className="text-black/75">Cash</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-center items-center mt-5">
+                  <button
+                    onClick={handleSubmit}
+                    className="bg-black px-6 py-3 rounded-full text-white hover:bg-gray-800 transition-all"
+                  >
+                    Confirm Ride
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Looking For Driver Panel - Always in DOM */}
+          <div
+            ref={panelRef3}
+            className="absolute bottom-0 left-0 w-full bg-white pt-3 overflow-y-auto rounded-t-2xl shadow-lg z-40 flex flex-col pb-5"
+            style={{ height: "50vh", transform: "translateY(100%)" }}
+          >
             <div
-              ref={panelRef3}
-              className="absolute bottom-0 left-0 w-full bg-white pt-3 overflow-y-auto rounded-t-2xl shadow-lg z-40 flex flex-col pb-5"
-              style={{ height: "50vh", transform: "translateY(100%)" }}
+              onClick={() => {
+                setLookingForDriver(false);
+                setChooseRide(true);
+              }}
+              className="absolute top-5 right-5 cursor-pointer"
             >
-              <div
-                onClick={() => {
-                  setLookingForDriver(false);
-                  setChooseRide(true);
-                }}
-                className="absolute top-5 right-5 cursor-pointer"
-              >
-                <X strokeWidth={3} />
-              </div>
-
-              <h3 className="px-5 py-5 text-xl font-bold">
-                Looking for driver...
-              </h3>
-
-              <div className="flex flex-col items-center justify-center gap-3 h-full">
-                <img
-                  src={rides[ride].img}
-                  alt={rides[ride].name}
-                  className="w-28 scale-150 object-contain"
-                />
-              </div>
-              <p className="text-center pb-5 text-black/70">
-                Searching nearby drivers...
-              </p>
+              <X strokeWidth={3} />
             </div>
-          )}
+
+            <h3 className="px-5 py-5 text-xl font-bold">
+              Looking for driver...
+            </h3>
+
+            {ride !== null && (
+              <>
+                <div className="flex flex-col items-center justify-center gap-3 h-full">
+                  <img
+                    src={rides[ride]?.img}
+                    alt={rides[ride]?.name}
+                    className="w-28 scale-150 object-contain"
+                  />
+                </div>
+                <p className="text-center pb-5 text-black/70">
+                  Searching nearby drivers...
+                </p>
+
+                {/* Loading animation */}
+                <div className="flex justify-center">
+                  <div className="w-8 h-8 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+                </div>
+              </>
+            )}
+          </div>
         </>
       )}
     </div>

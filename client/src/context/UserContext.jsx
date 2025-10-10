@@ -95,7 +95,7 @@ const UserContext = ({ children }) => {
       );
       if (response.status === 201) {
         toast.success("Ride created successfully!");
-        return response.data;
+        return true;
       }
     } catch (error) {
       console.error("Ride creation error:", error);
